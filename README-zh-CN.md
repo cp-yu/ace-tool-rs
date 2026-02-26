@@ -93,7 +93,7 @@ ace-tool-rs --base-url <API_URL> --token <AUTH_TOKEN>
 |------|------|
 | `RUST_LOG` | 设置日志级别（如 `info`、`debug`、`warn`） |
 | `PROMPT_ENHANCER` | 控制 `enhance_prompt` 工具的暴露：设置为 `disabled`、`false`、`0` 或 `off` 可隐藏并禁用该工具 |
-| `PROMPT_ENHANCER_ENDPOINT` | 端点选择：`new`（默认）、`old`、`claude`、`openai` 或 `gemini`（同时支持 `ACE_ENHANCER_ENDPOINT` 作为向后兼容） |
+| `PROMPT_ENHANCER_ENDPOINT` | 端点选择：`new`（默认）、`old`、`claude`、`openai`、`gemini` 或 `codex`（同时支持 `ACE_ENHANCER_ENDPOINT` 作为向后兼容） |
 | `PROMPT_ENHANCER_BASE_URL` | 第三方 API 的基础 URL（`claude`/`openai`/`gemini` 必需） |
 | `PROMPT_ENHANCER_TOKEN` | 第三方 API 的密钥（`claude`/`openai`/`gemini` 必需） |
 | `PROMPT_ENHANCER_MODEL` | 第三方 API 的模型名称覆盖（可选） |
@@ -219,16 +219,18 @@ $ cat settings.local.json
 | `new`（默认） | Augment `/prompt-enhancer` 端点 | 使用 `--base-url` 和 `--token` CLI 参数 |
 | `old` | Augment `/chat-stream` 端点（流式） | 使用 `--base-url` 和 `--token` CLI 参数 |
 | `claude` | Claude API (Anthropic) | 使用 `PROMPT_ENHANCER_*` 环境变量 |
-| `openai` | OpenAI API | 使用 `PROMPT_ENHANCER_*` 环境变量 |
+| `openai` | OpenAI API (`/v1/chat/completions`) | 使用 `PROMPT_ENHANCER_*` 环境变量 |
 | `gemini` | Gemini API (Google) | 使用 `PROMPT_ENHANCER_*` 环境变量 |
+| `codex` | Codex API (OpenAI Responses API `/v1/responses`) | 使用 `PROMPT_ENHANCER_*` 环境变量 |
 
 **第三方 API 默认模型：**
 
 | 提供商 | 默认模型 |
 |--------|----------|
-| Claude | `claude-sonnet-4-20250514` |
-| OpenAI | `gpt-4o` |
-| Gemini | `gemini-2.0-flash-exp` |
+| Claude | `claude-sonnet-4-5` |
+| OpenAI | `gpt-5.2` |
+| Gemini | `gemini-3-flash-preview` |
+| Codex | `gpt-5.3-codex` |
 
 **使用 Claude API 的示例：**
 
@@ -244,6 +246,17 @@ export PROMPT_ENHANCER_ENDPOINT=claude
 export PROMPT_ENHANCER_BASE_URL=https://api.anthropic.com
 export PROMPT_ENHANCER_TOKEN=your-anthropic-api-key
 ace-tool-rs --enhance-prompt "添加用户认证功能"
+```
+
+**使用 Codex API 的示例：**
+
+```bash
+# Codex 使用 OpenAI Responses API (/v1/responses)
+export PROMPT_ENHANCER_ENDPOINT=codex
+export PROMPT_ENHANCER_BASE_URL=https://api.openai.com
+export PROMPT_ENHANCER_TOKEN=your-openai-api-key
+# 可选: export PROMPT_ENHANCER_MODEL=codex-mini
+ace-tool-rs --enhance-prompt "重构认证逻辑"
 ```
 
 ## 支持的文件类型
@@ -302,7 +315,8 @@ ace-tool-rs/
 │   │   ├── augment.rs   # Augment New/Old 端点
 │   │   ├── claude.rs    # Claude API (Anthropic)
 │   │   ├── openai.rs    # OpenAI API
-│   │   └── gemini.rs    # Gemini API (Google)
+│   │   ├── gemini.rs    # Gemini API (Google)
+│   │   └── codex.rs     # Codex API (OpenAI Responses API)
 │   ├── strategy/
 │   │   ├── mod.rs
 │   │   ├── adaptive.rs  # AIMD 算法实现

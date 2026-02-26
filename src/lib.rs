@@ -11,7 +11,7 @@ pub mod tools;
 pub mod utils;
 
 /// User-Agent header value (matches augment.mjs format: augment.cli/{version})
-pub const USER_AGENT: &str = "augment.cli/0.12.0";
+pub const USER_AGENT: &str = "augment.cli/0.17.0";
 
 // Re-export commonly used types
 pub use config::{get_upload_strategy, CliOverrides, Config, UploadStrategy};

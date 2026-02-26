@@ -16,9 +16,10 @@ pub const ENV_ENHANCER_TOKEN: &str = "PROMPT_ENHANCER_TOKEN";
 pub const ENV_ENHANCER_MODEL: &str = "PROMPT_ENHANCER_MODEL";
 
 /// Default models for third-party APIs
-pub const DEFAULT_CLAUDE_MODEL: &str = "claude-sonnet-4-5-20250929";
-pub const DEFAULT_OPENAI_MODEL: &str = "gpt-5.2-codex";
+pub const DEFAULT_CLAUDE_MODEL: &str = "claude-sonnet-4-5";
+pub const DEFAULT_OPENAI_MODEL: &str = "gpt-5.2";
 pub const DEFAULT_GEMINI_MODEL: &str = "gemini-3-flash-preview";
+pub const DEFAULT_CODEX_MODEL: &str = "gpt-5.3-codex";
 
 /// Enhancer endpoint type
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -33,6 +34,8 @@ pub enum EnhancerEndpoint {
     OpenAI,
     /// Use Gemini API (Google)
     Gemini,
+    /// Use Codex API (OpenAI Responses API)
+    Codex,
 }
 
 impl std::fmt::Display for EnhancerEndpoint {
@@ -43,6 +46,7 @@ impl std::fmt::Display for EnhancerEndpoint {
             Self::Claude => write!(f, "claude"),
             Self::OpenAI => write!(f, "openai"),
             Self::Gemini => write!(f, "gemini"),
+            Self::Codex => write!(f, "codex"),
         }
     }
 }
@@ -55,13 +59,17 @@ impl EnhancerEndpoint {
             "claude" => Self::Claude,
             "openai" => Self::OpenAI,
             "gemini" => Self::Gemini,
+            "codex" => Self::Codex,
             _ => Self::New, // default
         }
     }
 
     /// Check if this is a third-party API (Claude/OpenAI/Gemini)
     pub fn is_third_party(&self) -> bool {
-        matches!(self, Self::Claude | Self::OpenAI | Self::Gemini)
+        matches!(
+            self,
+            Self::Claude | Self::OpenAI | Self::Gemini | Self::Codex
+        )
     }
 }
 
@@ -113,6 +121,7 @@ pub fn get_third_party_config(endpoint: EnhancerEndpoint) -> Result<ThirdPartyCo
         EnhancerEndpoint::Claude => DEFAULT_CLAUDE_MODEL,
         EnhancerEndpoint::OpenAI => DEFAULT_OPENAI_MODEL,
         EnhancerEndpoint::Gemini => DEFAULT_GEMINI_MODEL,
+        EnhancerEndpoint::Codex => DEFAULT_CODEX_MODEL,
         _ => "claude-sonnet-4-5",
     };
 

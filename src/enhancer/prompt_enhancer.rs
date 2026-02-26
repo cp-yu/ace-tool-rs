@@ -8,6 +8,7 @@
 //! - `claude`: Uses Claude API (Anthropic)
 //! - `openai`: Uses OpenAI API
 //! - `gemini`: Uses Gemini API (Google)
+//! - `codex`: Uses Codex API (OpenAI Responses API)
 
 use std::net::SocketAddr;
 use std::path::Path;
@@ -20,8 +21,8 @@ use tracing::{error, info, warn};
 
 use crate::config::Config;
 use crate::service::{
-    call_claude_endpoint, call_gemini_endpoint, call_new_endpoint, call_old_endpoint,
-    call_openai_endpoint, get_third_party_config, EnhancerEndpoint,
+    call_claude_endpoint, call_codex_endpoint, call_gemini_endpoint, call_new_endpoint,
+    call_old_endpoint, call_openai_endpoint, get_third_party_config, EnhancerEndpoint,
 };
 use crate::utils::project_detector::get_index_file_path;
 
@@ -358,6 +359,17 @@ async fn call_prompt_enhancer_api_static(
             info!("Using Gemini API endpoint");
             let third_party_config = get_third_party_config(endpoint)?;
             call_gemini_endpoint(
+                client,
+                &third_party_config,
+                original_prompt,
+                conversation_history,
+            )
+            .await
+        }
+        EnhancerEndpoint::Codex => {
+            info!("Using Codex API endpoint");
+            let third_party_config = get_third_party_config(endpoint)?;
+            call_codex_endpoint(
                 client,
                 &third_party_config,
                 original_prompt,

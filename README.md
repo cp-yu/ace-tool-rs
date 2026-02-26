@@ -93,7 +93,7 @@ ace-tool-rs --base-url <API_URL> --token <AUTH_TOKEN>
 |----------|-------------|
 | `RUST_LOG` | Set log level (e.g., `info`, `debug`, `warn`) |
 | `PROMPT_ENHANCER` | Control `enhance_prompt` tool exposure: set to `disabled`, `false`, `0`, or `off` to hide and disable the tool |
-| `PROMPT_ENHANCER_ENDPOINT` | Endpoint selection: `new` (default), `old`, `claude`, `openai`, or `gemini` (also reads `ACE_ENHANCER_ENDPOINT` as fallback) |
+| `PROMPT_ENHANCER_ENDPOINT` | Endpoint selection: `new` (default), `old`, `claude`, `openai`, `gemini`, or `codex` (also reads `ACE_ENHANCER_ENDPOINT` as fallback) |
 | `PROMPT_ENHANCER_BASE_URL` | Base URL for third-party API (required for `claude`/`openai`/`gemini`) |
 | `PROMPT_ENHANCER_TOKEN` | API key for third-party API (required for `claude`/`openai`/`gemini`) |
 | `PROMPT_ENHANCER_MODEL` | Model name override for third-party API (optional) |
@@ -219,16 +219,18 @@ The tool supports multiple backend endpoints, controlled by the `PROMPT_ENHANCER
 | `new` (default) | Augment `/prompt-enhancer` endpoint | Uses `--base-url` and `--token` CLI args |
 | `old` | Augment `/chat-stream` endpoint (streaming) | Uses `--base-url` and `--token` CLI args |
 | `claude` | Claude API (Anthropic) | Uses `PROMPT_ENHANCER_*` env vars |
-| `openai` | OpenAI API | Uses `PROMPT_ENHANCER_*` env vars |
+| `openai` | OpenAI API (`/v1/chat/completions`) | Uses `PROMPT_ENHANCER_*` env vars |
 | `gemini` | Gemini API (Google) | Uses `PROMPT_ENHANCER_*` env vars |
+| `codex` | Codex API (OpenAI Responses API `/v1/responses`) | Uses `PROMPT_ENHANCER_*` env vars |
 
 **Default Models for Third-Party APIs:**
 
 | Provider | Default Model |
 |----------|---------------|
-| Claude | `claude-sonnet-4-20250514` |
-| OpenAI | `gpt-4o` |
-| Gemini | `gemini-2.0-flash-exp` |
+| Claude | `claude-sonnet-4-5` |
+| OpenAI | `gpt-5.2` |
+| Gemini | `gemini-3-flash-preview` |
+| Codex | `gpt-5.3-codex` |
 
 **Example using Claude API:**
 
@@ -244,6 +246,17 @@ export PROMPT_ENHANCER_ENDPOINT=claude
 export PROMPT_ENHANCER_BASE_URL=https://api.anthropic.com
 export PROMPT_ENHANCER_TOKEN=your-anthropic-api-key
 ace-tool-rs --enhance-prompt "Add user authentication"
+```
+
+**Example using Codex API:**
+
+```bash
+# Codex uses OpenAI Responses API (/v1/responses)
+export PROMPT_ENHANCER_ENDPOINT=codex
+export PROMPT_ENHANCER_BASE_URL=https://api.openai.com
+export PROMPT_ENHANCER_TOKEN=your-openai-api-key
+# Optional: export PROMPT_ENHANCER_MODEL=codex-mini
+ace-tool-rs --enhance-prompt "Refactor authentication logic"
 ```
 
 ## Supported File Types
@@ -302,7 +315,8 @@ ace-tool-rs/
 │   │   ├── augment.rs   # Augment New/Old endpoints
 │   │   ├── claude.rs    # Claude API (Anthropic)
 │   │   ├── openai.rs    # OpenAI API
-│   │   └── gemini.rs    # Gemini API (Google)
+│   │   ├── gemini.rs    # Gemini API (Google)
+│   │   └── codex.rs     # Codex API (OpenAI Responses API)
 │   ├── strategy/
 │   │   ├── mod.rs
 │   │   ├── adaptive.rs  # AIMD algorithm implementation
