@@ -424,6 +424,7 @@ fn default_text_filenames() -> HashSet<String> {
         "Procfile",
         // Config files
         ".gitignore",
+        ".aceignore",
         ".gitattributes",
         ".gitmodules",
         ".dockerignore",

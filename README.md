@@ -14,7 +14,7 @@ ace-tool-rs is a Rust implementation of a codebase context engine that enables A
 - **Multi-language support** - Works with 50+ programming languages and file types
 - **Incremental updates** - Uses mtime caching to skip unchanged files and only uploads new/modified content
 - **Parallel processing** - Multi-threaded file scanning and processing for faster indexing
-- **Smart exclusions** - Respects `.gitignore` and common ignore patterns
+- **Smart exclusions** - Respects `.gitignore`, `.aceignore` and common ignore patterns
 
 ## Features
 
@@ -289,6 +289,22 @@ The following patterns are excluded by default:
 - **Media files**: `*.png`, `*.jpg`, `*.mp4`, `*.pdf`
 - **Lock files**: `package-lock.json`, `yarn.lock`, `Cargo.lock`
 
+### Custom Exclusions
+
+You can customize file filtering by creating a `.aceignore` file in your project root. It uses the same syntax as `.gitignore`:
+
+```gitignore
+# Exclude specific directories
+my-private-folder/
+temp-data/
+
+# Exclude file patterns
+*.local
+*.secret
+```
+
+Both `.gitignore` and `.aceignore` patterns are merged, with `.aceignore` taking precedence in case of conflicts.
+
 ## Architecture
 
 ```
@@ -430,7 +446,7 @@ cargo clippy
 
 ## Limitations
 
-- Only processes the root `.gitignore` file (nested `.gitignore` files are not supported)
+- Only processes the root `.gitignore` and `.aceignore` files (nested ignore files are not supported)
 - Requires network access to the indexing API
 - Maximum file size: 128KB per file
 - Maximum batch size: 1MB per upload batch
