@@ -1,0 +1,102 @@
+schema_version: 1
+project:
+  id: project
+  name: ace-tool-rs
+  description: MCP server for codebase indexing, semantic search, and prompt enhancement
+
+domains:
+  - id: dom.indexing
+    name: Codebase Indexing
+    intent: Manages codebase file indexing, semantic search, and adaptive upload strategies with mtime caching and parallel processing
+
+  - id: dom.enhancement
+    name: Prompt Enhancement
+    intent: Enhances user prompts by combining codebase context and conversation history for clearer, actionable requests
+
+  - id: dom.mcp
+    name: MCP Protocol Server
+    intent: Implements MCP JSON-RPC 2.0 protocol server over stdio transport with auto-detection of framing modes
+
+  - id: dom.integration
+    name: Third-Party API Integration
+    intent: Integrates multiple third-party AI API services for prompt enhancement with unified interface
+
+capabilities:
+  # Indexing Domain
+  - id: cap.indexing.scan
+    domain: dom.indexing
+    name: Scan Files
+    intent: Walk directory tree, filter files by gitignore/aceignore, detect encodings, and chunk large files
+
+  - id: cap.indexing.upload
+    domain: dom.indexing
+    name: Upload Blobs
+    intent: Batch upload file blobs to remote API with adaptive concurrency and timeout using AIMD algorithm
+
+  - id: cap.indexing.search
+    domain: dom.indexing
+    name: Semantic Search
+    intent: Query remote API for semantic code search using natural language
+
+  - id: cap.indexing.cache
+    domain: dom.indexing
+    name: Mtime Cache
+    intent: Track file modification times to skip unchanged files during incremental indexing
+
+  # Enhancement Domain
+  - id: cap.enhancement.orchestrate
+    domain: dom.enhancement
+    name: Enhancement Orchestration
+    intent: Coordinate codebase context retrieval, API calls, and result formatting
+
+  - id: cap.enhancement.webui
+    domain: dom.enhancement
+    name: Web UI Server
+    intent: Serve interactive web interface for reviewing and confirming enhanced prompts
+
+  - id: cap.enhancement.api
+    domain: dom.enhancement
+    name: API Integration
+    intent: Route enhancement requests to configured backend (Augment/Claude/OpenAI/Gemini/Codex)
+
+  # MCP Domain
+  - id: cap.mcp.protocol
+    domain: dom.mcp
+    name: JSON-RPC Protocol
+    intent: Handle JSON-RPC 2.0 requests/responses with method routing and error handling
+
+  - id: cap.mcp.transport
+    domain: dom.mcp
+    name: Transport Framing
+    intent: Auto-detect and handle line-delimited JSON vs LSP Content-Length framing
+
+  - id: cap.mcp.tools
+    domain: dom.mcp
+    name: Tool Registration
+    intent: Register and expose MCP tools (search_context, enhance_prompt) to clients
+
+  # Integration Domain
+  - id: cap.integration.augment
+    domain: dom.integration
+    name: Augment API
+    intent: Call Augment /prompt-enhancer (new) and /chat-stream (old) endpoints
+
+  - id: cap.integration.claude
+    domain: dom.integration
+    name: Claude API
+    intent: Call Anthropic Claude /v1/messages endpoint
+
+  - id: cap.integration.openai
+    domain: dom.integration
+    name: OpenAI API
+    intent: Call OpenAI /v1/chat/completions endpoint
+
+  - id: cap.integration.gemini
+    domain: dom.integration
+    name: Gemini API
+    intent: Call Google Gemini /v1beta/models/<model>:streamGenerateContent endpoint
+
+  - id: cap.integration.codex
+    domain: dom.integration
+    name: Codex API
+    intent: Call OpenAI Codex /v1/responses endpoint

@@ -1,0 +1,193 @@
+schema_version: 1
+generated_at: 2026-03-18T09:45:00.000Z
+
+nodes:
+  # Indexing Domain
+  - id: dom.indexing
+    code_refs:
+      - path: src/index/manager.rs
+        lines: 1-1000
+        note: Core IndexManager implementation
+      - path: src/config.rs
+        lines: 1-300
+        note: Configuration and upload strategies
+      - path: src/strategy/adaptive.rs
+        lines: 1-300
+        note: AIMD adaptive upload algorithm
+      - path: src/strategy/metrics.rs
+        lines: 1-100
+        note: Performance metrics tracking
+      - path: src/tools/search_context.rs
+        lines: 1-200
+        note: MCP search tool
+
+  - id: cap.indexing.scan
+    code_refs:
+      - path: src/index/manager.rs
+        lines: 1-800
+        note: IndexManager::index_project() - main scanning logic
+      - path: src/config.rs
+        lines: 93-96
+        note: default_text_extensions/filenames/exclude_patterns
+
+  - id: cap.indexing.upload
+    code_refs:
+      - path: src/index/manager.rs
+        lines: 400-600
+        note: upload_blobs() with adaptive strategy
+      - path: src/strategy/adaptive.rs
+        lines: 1-300
+        note: AdaptiveStrategy implementation
+      - path: src/strategy/metrics.rs
+        lines: 1-100
+        note: EWMA metrics tracking
+
+  - id: cap.indexing.search
+    code_refs:
+      - path: src/index/manager.rs
+        lines: 700-800
+        note: search() method
+      - path: src/tools/search_context.rs
+        lines: 1-200
+        note: MCP tool wrapper
+
+  - id: cap.indexing.cache
+    code_refs:
+      - path: src/index/manager.rs
+        lines: 62-93
+        note: IndexData and FileEntry structures
+      - path: src/utils/project_detector.rs
+        lines: 1-100
+        note: get_index_file_path() for cache location
+
+  # Enhancement Domain
+  - id: dom.enhancement
+    code_refs:
+      - path: src/enhancer/prompt_enhancer.rs
+        lines: 1-400
+        note: Core enhancement logic
+      - path: src/enhancer/server.rs
+        lines: 1-600
+        note: Web UI HTTP server
+      - path: src/enhancer/templates.rs
+        lines: 1-200
+        note: Prompt templates
+      - path: src/tools/enhance_prompt.rs
+        lines: 1-200
+        note: MCP tool implementation
+
+  - id: cap.enhancement.orchestrate
+    code_refs:
+      - path: src/enhancer/prompt_enhancer.rs
+        lines: 1-400
+        note: PromptEnhancer main logic
+      - path: src/enhancer/templates.rs
+        lines: 1-200
+        note: System prompt templates
+
+  - id: cap.enhancement.webui
+    code_refs:
+      - path: src/enhancer/server.rs
+        lines: 1-400
+        note: HTTP server with SSE streaming
+      - path: src/enhancer/server.rs
+        lines: 400-600
+        note: HTML/CSS/JS templates
+
+  - id: cap.enhancement.api
+    code_refs:
+      - path: src/service/mod.rs
+        lines: 1-100
+        note: Service routing logic
+      - path: src/tools/enhance_prompt.rs
+        lines: 1-200
+        note: MCP tool wrapper
+
+  # MCP Domain
+  - id: dom.mcp
+    code_refs:
+      - path: src/mcp/server.rs
+        lines: 1-500
+        note: Main MCP server implementation
+      - path: src/mcp/types.rs
+        lines: 1-200
+        note: JSON-RPC type definitions
+      - path: src/main.rs
+        lines: 1-200
+        note: CLI entry point and server startup
+
+  - id: cap.mcp.protocol
+    code_refs:
+      - path: src/mcp/types.rs
+        lines: 1-200
+        note: JsonRpcRequest/Response types
+      - path: src/mcp/server.rs
+        lines: 1-300
+        note: Protocol handling logic
+
+  - id: cap.mcp.transport
+    code_refs:
+      - path: src/mcp/server.rs
+        lines: 100-200
+        note: Transport detection and framing
+
+  - id: cap.mcp.tools
+    code_refs:
+      - path: src/mcp/server.rs
+        lines: 200-400
+        note: tools/list and tools/call handlers
+      - path: src/tools/mod.rs
+        lines: 1-50
+        note: Tool module exports
+
+  # Integration Domain
+  - id: dom.integration
+    code_refs:
+      - path: src/service/augment.rs
+        lines: 1-400
+        note: Augment API implementation
+      - path: src/service/claude.rs
+        lines: 1-300
+        note: Claude API implementation
+      - path: src/service/openai.rs
+        lines: 1-300
+        note: OpenAI API implementation
+      - path: src/service/gemini.rs
+        lines: 1-300
+        note: Gemini API implementation
+      - path: src/service/codex.rs
+        lines: 1-300
+        note: Codex API implementation
+      - path: src/service/common.rs
+        lines: 1-200
+        note: Shared types and utilities
+
+  - id: cap.integration.augment
+    code_refs:
+      - path: src/service/augment.rs
+        lines: 1-400
+        note: Augment API client implementation
+
+  - id: cap.integration.claude
+    code_refs:
+      - path: src/service/claude.rs
+        lines: 1-300
+        note: Claude API client
+
+  - id: cap.integration.openai
+    code_refs:
+      - path: src/service/openai.rs
+        lines: 1-300
+        note: OpenAI API client
+
+  - id: cap.integration.gemini
+    code_refs:
+      - path: src/service/gemini.rs
+        lines: 1-300
+        note: Gemini API client
+
+  - id: cap.integration.codex
+    code_refs:
+      - path: src/service/codex.rs
+        lines: 1-300
+        note: Codex API client

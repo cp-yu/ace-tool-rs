@@ -1,0 +1,31 @@
+schema_version: 1
+generated_at: 2026-03-18T09:45:00.000Z
+
+relations:
+  # MCP contains indexing and enhancement
+  - from: dom.mcp
+    to: dom.indexing
+    type: contains
+    reason: Exposes indexing capabilities as MCP tools
+
+  - from: dom.mcp
+    to: dom.enhancement
+    type: contains
+    reason: Exposes prompt enhancement as MCP tool
+
+  # Enhancement depends on integration and indexing
+  - from: dom.enhancement
+    to: dom.integration
+    type: depends_on
+    reason: Uses third-party API services for enhancement
+
+  - from: dom.enhancement
+    to: dom.indexing
+    type: depends_on
+    reason: Retrieves codebase context for enhancement
+
+  # Indexing depends on MCP
+  - from: dom.indexing
+    to: dom.mcp
+    type: depends_on
+    reason: Exposes indexing capabilities via MCP protocol
