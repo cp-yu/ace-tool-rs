@@ -1,0 +1,76 @@
+domain:
+  id: dom.indexing
+  name: Codebase Indexing
+  intent: Manages codebase file indexing, semantic search, and adaptive upload strategies with mtime caching and parallel processing
+
+capabilities:
+  - id: cap.indexing.scan
+    name: Scan Files
+    intent: Walk directory tree, filter files by gitignore/aceignore, detect encodings, and chunk large files
+    code_refs:
+      - path: src/index/manager.rs
+        lines: 1-800
+        note: IndexManager::index_project() - main scanning logic
+      - path: src/config.rs
+        lines: 93-96
+        note: default_text_extensions/filenames/exclude_patterns
+
+  - id: cap.indexing.upload
+    name: Upload Blobs
+    intent: Batch upload file blobs to remote API with adaptive concurrency and timeout using AIMD algorithm
+    code_refs:
+      - path: src/index/manager.rs
+        lines: 400-600
+        note: upload_blobs() with adaptive strategy
+      - path: src/strategy/adaptive.rs
+        lines: 1-300
+        note: AdaptiveStrategy implementation
+      - path: src/strategy/metrics.rs
+        lines: 1-100
+        note: EWMA metrics tracking
+
+  - id: cap.indexing.search
+    name: Semantic Search
+    intent: Query remote API for semantic code search using natural language
+    code_refs:
+      - path: src/index/manager.rs
+        lines: 700-800
+        note: search() method
+      - path: src/tools/search_context.rs
+        lines: 1-200
+        note: MCP tool wrapper
+
+  - id: cap.indexing.cache
+    name: Mtime Cache
+    intent: Track file modification times to skip unchanged files during incremental indexing
+    code_refs:
+      - path: src/index/manager.rs
+        lines: 62-93
+        note: IndexData and FileEntry structures
+      - path: src/utils/project_detector.rs
+        lines: 1-100
+        note: get_index_file_path() for cache location
+
+relations:
+  depends_on:
+    - id: dom.mcp
+      reason: Exposes indexing capabilities via MCP protocol
+  contained_by: []
+  contains: []
+
+code_refs:
+  - path: src/index/manager.rs
+    lines: 1-1000
+    note: Core IndexManager implementation
+  - path: src/config.rs
+    lines: 1-300
+    note: Configuration and upload strategies
+  - path: src/strategy/adaptive.rs
+    lines: 1-300
+    note: AIMD adaptive upload algorithm
+  - path: src/strategy/metrics.rs
+    lines: 1-100
+    note: Performance metrics tracking
+  - path: src/tools/search_context.rs
+    lines: 1-200
+    note: MCP search tool

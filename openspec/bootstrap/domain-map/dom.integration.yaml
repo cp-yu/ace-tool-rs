@@ -1,0 +1,72 @@
+domain:
+  id: dom.integration
+  name: Third-Party API Integration
+  intent: Integrates multiple third-party AI API services for prompt enhancement with unified interface
+
+capabilities:
+  - id: cap.integration.augment
+    name: Augment API
+    intent: Call Augment /prompt-enhancer (new) and /chat-stream (old) endpoints
+    code_refs:
+      - path: src/service/augment.rs
+        lines: 1-400
+        note: Augment API client implementation
+
+  - id: cap.integration.claude
+    name: Claude API
+    intent: Call Anthropic Claude /v1/messages endpoint
+    code_refs:
+      - path: src/service/claude.rs
+        lines: 1-300
+        note: Claude API client
+
+  - id: cap.integration.openai
+    name: OpenAI API
+    intent: Call OpenAI /v1/chat/completions endpoint
+    code_refs:
+      - path: src/service/openai.rs
+        lines: 1-300
+        note: OpenAI API client
+
+  - id: cap.integration.gemini
+    name: Gemini API
+    intent: Call Google Gemini /v1beta/models/<model>:streamGenerateContent endpoint
+    code_refs:
+      - path: src/service/gemini.rs
+        lines: 1-300
+        note: Gemini API client
+
+  - id: cap.integration.codex
+    name: Codex API
+    intent: Call OpenAI Codex /v1/responses endpoint
+    code_refs:
+      - path: src/service/codex.rs
+        lines: 1-300
+        note: Codex API client
+
+relations:
+  depends_on: []
+  contained_by:
+    - id: dom.enhancement
+      reason: Used by prompt enhancement orchestration
+  contains: []
+
+code_refs:
+  - path: src/service/augment.rs
+    lines: 1-400
+    note: Augment API implementation
+  - path: src/service/claude.rs
+    lines: 1-300
+    note: Claude API implementation
+  - path: src/service/openai.rs
+    lines: 1-300
+    note: OpenAI API implementation
+  - path: src/service/gemini.rs
+    lines: 1-300
+    note: Gemini API implementation
+  - path: src/service/codex.rs
+    lines: 1-300
+    note: Codex API implementation
+  - path: src/service/common.rs
+    lines: 1-200
+    note: Shared types and utilities

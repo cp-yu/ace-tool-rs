@@ -1,0 +1,36 @@
+domains:
+  - id: dom.indexing
+    confidence: high
+    sources:
+      - code:src/index/manager.rs
+      - code:src/tools/search_context.rs
+      - code:src/strategy/adaptive.rs
+      - code:src/config.rs
+    intent: Manages codebase file indexing, semantic search, and adaptive upload strategies with mtime caching and parallel processing
+
+  - id: dom.enhancement
+    confidence: high
+    sources:
+      - code:src/enhancer/prompt_enhancer.rs
+      - code:src/enhancer/server.rs
+      - code:src/enhancer/templates.rs
+      - code:src/tools/enhance_prompt.rs
+    intent: Enhances user prompts by combining codebase context and conversation history for clearer, actionable requests
+
+  - id: dom.mcp
+    confidence: high
+    sources:
+      - code:src/mcp/server.rs
+      - code:src/mcp/types.rs
+      - code:src/main.rs
+    intent: Implements MCP JSON-RPC 2.0 protocol server over stdio transport with auto-detection of framing modes
+
+  - id: dom.integration
+    confidence: medium
+    sources:
+      - code:src/service/augment.rs
+      - code:src/service/claude.rs
+      - code:src/service/openai.rs
+      - code:src/service/gemini.rs
+      - code:src/service/codex.rs
+    intent: Integrates multiple third-party AI API services for prompt enhancement with unified interface
