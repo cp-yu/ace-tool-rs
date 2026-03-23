@@ -150,6 +150,35 @@ startup_timeout_ms = 60000
 }
 ```
 
+### OpenCode
+
+对于 OpenCode 或类似的 agent 型客户端，通常最顺滑的配置是关闭浏览器审阅步骤，让增强后的提示词直接返回给 agent：
+
+```json
+{
+  "mcpServers": {
+    "ace-tool": {
+      "command": "npx",
+      "args": [
+        "ace-tool-rs",
+        "--base-url", "https://api.example.com",
+        "--token", "your-token-here",
+        "--transport", "lsp",
+        "--no-webbrowser-enhance-prompt"
+      ]
+    }
+  }
+}
+```
+
+推荐在 OpenCode 中这样使用：
+
+1. 仅在你明确需要“改写/增强提示词”时，让 agent 调用 `enhance_prompt`。
+2. 让工具直接返回增强后的结果。
+3. 再让 agent 把这段结果作为下一条实现请求继续执行。
+
+如果你更喜欢在浏览器里手动审阅，就不要传 `--no-webbrowser-enhance-prompt`，并在期待 MCP 调用结束之前先完成 Web UI 中的确认步骤。
+
 ### Claude Code
 
 运行以下命令：
@@ -195,6 +224,18 @@ $ cat settings.local.json
 #### `enhance_prompt`
 
 通过结合代码库上下文和对话历史来增强用户提示词，生成更清晰、更具体、更可操作的提示词。
+
+**默认行为说明：**
+
+- MCP 工具会先调用 prompt-enhancer API。
+- 随后会启动一个本地 Web UI，等待用户审阅、编辑并点击 **Send**。
+- 在等待确认期间，MCP 客户端看起来像是“卡在 send 之后不动了”，这是预期行为：工具正在等待浏览器中的确认步骤完成。
+
+**如果你希望完全在终端内 / 不弹浏览器：**
+
+- 启动 ace-tool-rs 时加上 `--no-webbrowser-enhance-prompt`。
+- 在这个模式下，`enhance_prompt` 会直接把 API 返回结果交回 MCP 客户端，不会打开浏览器。
+- 对 OpenCode 这类希望增强结果直接回流到对话里的 agent 工具来说，这通常是更顺滑的用法。
 
 **参数：**
 

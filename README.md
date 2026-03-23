@@ -150,6 +150,35 @@ Add to your Claude Desktop configuration file:
 }
 ```
 
+### OpenCode
+
+For OpenCode or similar agent-style clients, the smoothest setup is usually to disable the browser review step so the enhanced prompt is returned directly to the agent:
+
+```json
+{
+  "mcpServers": {
+    "ace-tool": {
+      "command": "npx",
+      "args": [
+        "ace-tool-rs",
+        "--base-url", "https://api.example.com",
+        "--token", "your-token-here",
+        "--transport", "lsp",
+        "--no-webbrowser-enhance-prompt"
+      ]
+    }
+  }
+}
+```
+
+Recommended workflow in OpenCode:
+
+1. Ask the agent to call `enhance_prompt` only when you explicitly want prompt rewriting.
+2. Let the tool return the enhanced result directly.
+3. Have the agent use that returned text as the next implementation prompt.
+
+If you prefer manual review in a browser, omit `--no-webbrowser-enhance-prompt` and complete the Web UI step before expecting the MCP call to finish.
+
 ### Claude Code
 
 Run command like below:
@@ -195,6 +224,18 @@ Search the codebase using natural language queries.
 #### `enhance_prompt`
 
 Enhance user prompts by combining codebase context and conversation history to generate clearer, more specific, and actionable prompts.
+
+**How it behaves by default:**
+
+- The MCP tool first calls the prompt-enhancer API.
+- It then starts a small local Web UI and waits for the user to review, edit, and click **Send**.
+- While waiting for that confirmation, the MCP client may look like it has "stopped" after the tool call. This is expected: the tool is waiting for the browser step to finish.
+
+**If you want a fully in-terminal / non-browser flow:**
+
+- Start ace-tool-rs with `--no-webbrowser-enhance-prompt`.
+- In that mode, `enhance_prompt` returns the API result directly to the MCP client without opening a browser.
+- This mode is usually the best fit for agent-style tools such as OpenCode when you want the enhanced prompt to flow straight back into the conversation.
 
 **Parameters:**
 
