@@ -1,8 +1,8 @@
 [package]
 name = "ace-tool-rs"
-version = "0.1.14"
+version = "0.2.0"
 edition = "2021"
-description = "MCP server for codebase indexing, semantic search, and prompt enhancement"
+description = "MCP server for codebase indexing and semantic search"
 license = "GPL-3.0-only OR LicenseRef-Commercial"
 authors = ["missdeer"]
 repository = "https://github.com/missdeer/ace-tool-rs.git"

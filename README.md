@@ -2,64 +2,42 @@
 
 English | [简体中文](README-zh-CN.md)
 
-A high-performance MCP (Model Context Protocol) server for codebase indexing, semantic search, and prompt enhancement, written in Rust.
+A high-performance MCP (Model Context Protocol) server for codebase indexing and semantic search, written in Rust.
 
 ## Overview
 
-ace-tool-rs is a Rust implementation of a codebase context engine that enables AI assistants to search and understand codebases using natural language queries. It provides:
+ace-tool-rs provides:
 
-- **Real-time codebase indexing** - Automatically indexes your project files and keeps the index up-to-date
-- **Semantic search** - Find relevant code using natural language descriptions
-- **Prompt enhancement** - Enhance user prompts with codebase context for clearer, more actionable requests
-- **Multi-language support** - Works with 50+ programming languages and file types
-- **Incremental updates** - Uses mtime caching to skip unchanged files and only uploads new/modified content
-- **Parallel processing** - Multi-threaded file scanning and processing for faster indexing
-- **Smart exclusions** - Respects `.gitignore`, `.aceignore` and common ignore patterns
-
-## Features
-
-- **MCP Protocol Support** - Full JSON-RPC 2.0 implementation over stdio transport
-- **Adaptive Upload Strategy** - AIMD (Additive Increase, Multiplicative Decrease) algorithm dynamically adjusts concurrency and timeout based on runtime metrics
-- **Multi-encoding Support** - Handles UTF-8, GBK, GB18030, and Windows-1252 encoded files
-- **Concurrent Uploads** - Parallel batch uploads with sliding window for faster indexing of large projects
-- **Mtime Caching** - Tracks file modification times to avoid re-processing unchanged files
-- **Robust Error Handling** - Retry logic with exponential backoff and rate limiting support
+- Real-time codebase indexing with incremental updates
+- Semantic code search using natural-language queries
+- MCP JSON-RPC 2.0 server over stdio
+- Adaptive upload strategy based on runtime metrics
+- Multi-language and multi-encoding file support
+- Respect for `.gitignore`, `.aceignore`, and common exclude patterns
 
 ## Installation
 
-### Quick Start (Recommended)
-
-The easiest way to install and run ace-tool-rs is via npx:
+### Quick Start
 
 ```bash
 npx ace-tool-rs --base-url <API_URL> --token <AUTH_TOKEN>
 ```
 
-This will automatically download the appropriate binary for your platform and run it.
-
-**Supported platforms:**
-- Windows (x64)
-- macOS (x64, ARM64)
-- Linux (x64, ARM64)
-
 ### From Source
 
 ```bash
-# Clone the repository
 git clone https://github.com/missdeer/ace-tool-rs.git
 cd ace-tool-rs
-
-# Build release binary
 cargo build --release
-
-# The binary will be at target/release/ace-tool-rs
 ```
 
-### Requirements
+The binary will be available at `target/release/ace-tool-rs`.
+
+## Requirements
 
 - Rust 1.70 or later
 - An API endpoint for the indexing service
-- Authentication token
+- An authentication token
 
 ## Usage
 
@@ -73,100 +51,49 @@ ace-tool-rs --base-url <API_URL> --token <AUTH_TOKEN>
 
 | Argument | Description |
 |----------|-------------|
-| `--base-url` | API base URL for the indexing service (optional for `--enhance-prompt` with third-party endpoints) |
-| `--token` | Authentication token for API access (optional for `--enhance-prompt` with third-party endpoints) |
+| `--base-url` | API base URL for the indexing service |
+| `--token` | Authentication token for API access |
 | `--transport` | Transport framing: `auto` (default), `lsp`, `line` |
-| `--upload-timeout` | Override upload timeout in seconds (disables adaptive timeout) |
-| `--upload-concurrency` | Override upload concurrency (disables adaptive concurrency) |
-| `--no-adaptive` | Disable adaptive strategy, use static heuristic values |
-| `--no-webbrowser-enhance-prompt` | Disable web browser interaction for enhance_prompt, return API result directly |
-| `--force-xdg-open` | Force using xdg-open instead of explorer.exe in WSL environment |
-| `--webui-addr` | Bind address and port for the enhance_prompt Web UI server (e.g., `127.0.0.1:8754`, `0.0.0.0:3456`). If not specified, automatically selects an available port on 127.0.0.1. **Warning:** binding to a non-loopback address exposes the unauthenticated Web UI to the network |
-| `--index-only` | Index current directory and exit (no MCP server) |
-| `--enhance-prompt` | Enhance a prompt and output the result to stdout, then exit |
+| `--upload-timeout` | Override upload timeout in seconds |
+| `--upload-concurrency` | Override upload concurrency |
+| `--no-adaptive` | Disable adaptive strategy |
+| `--index-only` | Index current directory and exit |
 | `--max-lines-per-blob` | Maximum lines per blob chunk (default: 800) |
-| `--retrieval-timeout` | Search retrieval timeout in seconds (default: 180) |
+| `--retrieval-timeout` | Search retrieval timeout in seconds |
 
 ### Environment Variables
 
 | Variable | Description |
 |----------|-------------|
-| `RUST_LOG` | Set log level (e.g., `info`, `debug`, `warn`) |
-| `PROMPT_ENHANCER` | Control `enhance_prompt` tool exposure: set to `disabled`, `false`, `0`, or `off` to hide and disable the tool |
-| `PROMPT_ENHANCER_ENDPOINT` | Endpoint selection: `new` (default), `old`, `claude`, `openai`, `gemini`, or `codex` (also reads `ACE_ENHANCER_ENDPOINT` as fallback) |
-| `PROMPT_ENHANCER_BASE_URL` | Base URL for third-party API (required for `claude`/`openai`/`gemini`/`codex`) |
-| `PROMPT_ENHANCER_TOKEN` | API key for third-party API (required for `claude`/`openai`/`gemini`/`codex`) |
-| `PROMPT_ENHANCER_MODEL` | Model name override for third-party API (optional) |
+| `RUST_LOG` | Set log level, for example `info`, `debug`, or `warn` |
 
 ### Example
 
 ```bash
-# Run with debug logging
 RUST_LOG=debug ace-tool-rs --base-url https://api.example.com --token your-token-here
-```
-
-### Transport Framing
-
-By default, the server auto-detects line-delimited JSON vs. LSP `Content-Length` framing.
-If your client requires a specific mode, force it:
-
-```bash
-ace-tool-rs --base-url https://api.example.com --token your-token-here --transport lsp
 ```
 
 ## MCP Integration
 
-### Codex CLI Configuration
+### Codex CLI
 
-Add to your Codex config file (typically `~/.codex/config.toml`):
+Add to `~/.codex/config.toml`:
 
 ```toml
 [mcp_servers.ace-tool]
 command = "npx"
-args = ["ace-tool-rs", "--base-url", "https://api.example.com", "--token", "your-token-here", "--transport", "lsp"]
-env = { RUST_LOG = "info" }
-startup_timeout_ms = 60000
+args = ["-y", "ace-tool-rs", "--base-url", "<API_URL>", "--token", "<AUTH_TOKEN>"]
 ```
 
-### Claude Desktop Configuration
+### Claude Code Permissions
 
-Add to your Claude Desktop configuration file:
-
-**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+Add permission in `settings.local.json`:
 
 ```json
-{
-  "mcpServers": {
-    "ace-tool": {
-      "command": "npx",
-      "args": [
-        "ace-tool-rs",
-        "--base-url", "https://api.example.com",
-        "--token", "your-token-here"
-      ]
-    }
-  }
-}
-```
-
-### Claude Code
-
-Run command like below:
-
-```bash
-claude mcp add-json ace-tool --scope user '{"type":"stdio","command":"npx","args":["ace-tool-rs","--base-url","https://api.example.com/","--token","your-token-here"],"env":{}}'
-```
-
-Modify `~/.claude/settings.json` to add permission for the tools:
-
-```json
-$ cat settings.local.json
 {
   "permissions": {
     "allow": [
-      "mcp__ace-tool__search_context",
-      "mcp__ace-tool__enhance_prompt"
+      "mcp__ace-tool__search_context"
     ]
   }
 }
@@ -176,148 +103,37 @@ $ cat settings.local.json
 
 #### `search_context`
 
-Search the codebase using natural language queries.
-
-**Parameters:**
+Search the codebase using natural-language queries.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `project_root_path` | string | Yes | Absolute path to the project root directory |
-| `query` | string | Yes | Natural language description of the code you're looking for |
+| `query` | string | Yes | Natural-language description of the code to find |
 
-**Example queries:**
+Example queries:
 
-- "Where is the function that handles user authentication?"
-- "What tests are there for the login functionality?"
-- "How is the database connected to the application?"
-- "Find the initialization flow of message queue consumers"
-
-#### `enhance_prompt`
-
-Enhance user prompts by combining codebase context and conversation history to generate clearer, more specific, and actionable prompts.
-
-**Parameters:**
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `prompt` | string | Yes | The original prompt to enhance |
-| `conversation_history` | string | Yes | Recent conversation history (5-10 rounds) in format: `User: xxx\nAssistant: yyy` |
-| `project_root_path` | string | No | Absolute path to the project root directory (optional, defaults to current working directory) |
-
-**Features:**
-
-- Automatic language detection (Chinese input → Chinese output, English input → English output)
-- Uses codebase context from indexed files
-- Considers conversation history for better context understanding
-
-**API Endpoints:**
-
-The tool supports multiple backend endpoints, controlled by the `PROMPT_ENHANCER_ENDPOINT` environment variable (with `ACE_ENHANCER_ENDPOINT` as a backward-compatible fallback):
-
-| Endpoint | Description | Configuration |
-|----------|-------------|---------------|
-| `new` (default) | Augment `/prompt-enhancer` endpoint | Uses `--base-url` and `--token` CLI args |
-| `old` | Augment `/chat-stream` endpoint (streaming) | Uses `--base-url` and `--token` CLI args |
-| `claude` | Claude API (Anthropic `/v1/messages`) | Uses `PROMPT_ENHANCER_*` env vars |
-| `openai` | OpenAI API (ChatGPT `/v1/chat/completions`) | Uses `PROMPT_ENHANCER_*` env vars |
-| `gemini` | Gemini API (Google `/v1beta/models/<model>:streamGenerateContent`) | Uses `PROMPT_ENHANCER_*` env vars |
-| `codex` | Codex API (OpenAI Responses API `/v1/responses`) | Uses `PROMPT_ENHANCER_*` env vars |
-
-**Default Models for Third-Party APIs:**
-
-| Provider | Default Model |
-|----------|---------------|
-| Claude | `claude-sonnet-4-5` |
-| OpenAI | `gpt-5.2` |
-| Gemini | `gemini-3-flash-preview` |
-| Codex | `gpt-5.3-codex` |
-
-**Example using Claude API:**
-
-```bash
-# For MCP server mode, --base-url and --token are still required
-export PROMPT_ENHANCER_ENDPOINT=claude
-export PROMPT_ENHANCER_BASE_URL=https://api.anthropic.com
-export PROMPT_ENHANCER_TOKEN=your-anthropic-api-key
-ace-tool-rs --base-url https://api.example.com --token your-token
-
-# For --enhance-prompt mode with third-party endpoints, --base-url and --token are optional
-export PROMPT_ENHANCER_ENDPOINT=claude
-export PROMPT_ENHANCER_BASE_URL=https://api.anthropic.com
-export PROMPT_ENHANCER_TOKEN=your-anthropic-api-key
-ace-tool-rs --enhance-prompt "Add user authentication"
-```
-
-**Example using Codex API:**
-
-```bash
-# Codex uses OpenAI Responses API (/v1/responses)
-export PROMPT_ENHANCER_ENDPOINT=codex
-export PROMPT_ENHANCER_BASE_URL=https://api.openai.com
-export PROMPT_ENHANCER_TOKEN=your-openai-api-key
-# Optional: export PROMPT_ENHANCER_MODEL=codex-mini
-ace-tool-rs --enhance-prompt "Refactor authentication logic"
-```
+- `Where is the function that handles user authentication?`
+- `What tests are there for the login functionality?`
+- `How is the database connected to the application?`
 
 ## Supported File Types
 
-### Programming Languages
+ace-tool-rs indexes common source, config, and text formats including:
 
-`.py`, `.js`, `.ts`, `.jsx`, `.tsx`, `.java`, `.go`, `.rs`, `.cpp`, `.c`, `.h`, `.cs`, `.rb`, `.php`, `.swift`, `.kt`, `.scala`, `.lua`, `.dart`, `.r`, `.jl`, `.ex`, `.hs`, `.zig`, and many more.
-
-### Configuration & Data
-
-`.json`, `.yaml`, `.yml`, `.toml`, `.xml`, `.ini`, `.conf`, `.md`, `.txt`
-
-### Web Technologies
-
-`.html`, `.css`, `.scss`, `.sass`, `.vue`, `.svelte`, `.astro`
-
-### Special Files
-
-`Makefile`, `Dockerfile`, `Jenkinsfile`, `.gitignore`, `.env.example`, `requirements.txt`, and more.
-
-## Default Exclusions
-
-The following patterns are excluded by default:
-
-- **Dependencies**: `node_modules`, `vendor`, `.venv`, `venv`
-- **Build artifacts**: `target`, `dist`, `build`, `out`, `.next`
-- **Version control**: `.git`, `.svn`, `.hg`
-- **Cache directories**: `__pycache__`, `.cache`, `.pytest_cache`
-- **Binary files**: `*.exe`, `*.dll`, `*.so`, `*.pyc`
-- **Media files**: `*.png`, `*.jpg`, `*.mp4`, `*.pdf`
-- **Lock files**: `package-lock.json`, `yarn.lock`, `Cargo.lock`
-
-### Custom Exclusions
-
-You can customize file filtering by creating a `.aceignore` file in your project root. It uses the same syntax as `.gitignore`:
-
-```gitignore
-# Exclude specific directories
-my-private-folder/
-temp-data/
-
-# Exclude file patterns
-*.local
-*.secret
-```
-
-Both `.gitignore` and `.aceignore` patterns are merged, with `.aceignore` taking precedence in case of conflicts.
+- Programming languages: `.rs`, `.py`, `.js`, `.ts`, `.go`, `.java`, `.cpp`, `.c`, `.cs`, `.rb`, `.php`, `.swift`, `.kt`, `.scala`
+- Web files: `.html`, `.css`, `.scss`, `.vue`, `.svelte`, `.astro`
+- Config and data: `.json`, `.yaml`, `.yml`, `.toml`, `.xml`, `.ini`, `.conf`, `.md`, `.txt`
+- Special files: `Makefile`, `Dockerfile`, `Jenkinsfile`, `.gitignore`, `.env.example`, `requirements.txt`
 
 ## Architecture
 
-```
+```text
 ace-tool-rs/
 ├── src/
 │   ├── main.rs          # Entry point and CLI
 │   ├── lib.rs           # Library exports
 │   ├── config.rs        # Configuration and upload strategies
-│   ├── enhancer/
-│   │   ├── mod.rs
-│   │   ├── prompt_enhancer.rs  # Prompt enhancement orchestration
-│   │   ├── server.rs           # Web UI HTTP server
-│   │   └── templates.rs        # Enhancement prompt templates
+│   ├── http_logger.rs   # HTTP request/response logging
 │   ├── index/
 │   │   ├── mod.rs
 │   │   └── manager.rs   # Core indexing and search logic
@@ -325,168 +141,33 @@ ace-tool-rs/
 │   │   ├── mod.rs
 │   │   ├── server.rs    # MCP server implementation
 │   │   └── types.rs     # JSON-RPC types
-│   ├── service/
-│   │   ├── mod.rs       # Service module exports
-│   │   ├── common.rs    # Shared types and utilities
-│   │   ├── augment.rs   # Augment New/Old endpoints
-│   │   ├── claude.rs    # Claude API (Anthropic)
-│   │   ├── openai.rs    # OpenAI API
-│   │   ├── gemini.rs    # Gemini API (Google)
-│   │   └── codex.rs     # Codex API (OpenAI Responses API)
 │   ├── strategy/
 │   │   ├── mod.rs
 │   │   ├── adaptive.rs  # AIMD algorithm implementation
 │   │   └── metrics.rs   # EWMA and runtime metrics
 │   ├── tools/
 │   │   ├── mod.rs
-│   │   └── search_context.rs  # Search tool implementation
+│   │   └── search_context.rs
 │   └── utils/
 │       ├── mod.rs
-│       └── project_detector.rs  # Project utilities
-└── tests/               # Integration tests
+│       ├── path_normalizer.rs
+│       └── project_detector.rs
+└── tests/
     ├── config_test.rs
-    ├── enhancer_server_test.rs
+    ├── http_logger_test.rs
     ├── index_test.rs
+    ├── mcp_server_test.rs
     ├── mcp_test.rs
-    ├── prompt_enhancer_test.rs
-    ├── third_party_api_test.rs
+    ├── path_normalizer_test.rs
     ├── tools_test.rs
     └── utils_test.rs
 ```
 
-## Adaptive Upload Strategy
-
-The tool uses an AIMD (Additive Increase, Multiplicative Decrease) algorithm inspired by TCP congestion control to dynamically optimize upload performance:
-
-### How It Works
-
-1. **Warmup Phase**: Starts with concurrency=1, evaluates success rate over 5-10 requests, then jumps to target concurrency if successful
-2. **Additive Increase**: When success rate > 95% and latency is healthy, concurrency increases by 1
-3. **Multiplicative Decrease**: When success rate < 70%, rate limited, or high latency, concurrency halves and timeout increases by 50%
-
-### Metrics
-
-- **EWMA Latency**: Exponentially weighted moving average (α=0.2) for latency smoothing
-- **Success Rate**: Calculated over a sliding window of 20 requests
-- **Latency Health**: Compared against a fixed baseline to detect degradation
-
-### Safety Bounds
-
-| Parameter | Minimum | Maximum |
-|-----------|---------|---------|
-| Concurrency | 1 | 8 |
-| Timeout | 15s | 180s |
-
-### CLI Overrides
-
-You can override individual parameters while keeping others adaptive:
-
-```bash
-# Fixed concurrency, adaptive timeout
-ace-tool-rs --base-url ... --token ... --upload-concurrency 4
-
-# Fixed timeout, adaptive concurrency
-ace-tool-rs --base-url ... --token ... --upload-timeout 60
-
-# Disable adaptive entirely (use static heuristic)
-ace-tool-rs --base-url ... --token ... --no-adaptive
-```
-
-## Project Scale Strategies
-
-The tool uses heuristic-based initial values based on project size. With adaptive mode enabled (default), these serve as target values that the AIMD algorithm works toward:
-
-| Scale | Blob Count | Batch Size | Target Concurrency | Target Timeout |
-|-------|------------|------------|-------------------|----------------|
-| Small | < 100 | 10 | 1 | 30s |
-| Medium | 100-499 | 30 | 2 | 45s |
-| Large | 500-1999 | 50 | 3 | 60s |
-| Extra Large | 2000+ | 70 | 4 | 90s |
-
-With `--no-adaptive`, these values are used directly without runtime adjustment.
-
 ## Development
 
-### Running Tests
-
 ```bash
-# Run all tests
-cargo test
-
-# Run with output
-cargo test -- --nocapture
-
-# Run specific test
-cargo test test_config_new
-```
-
-### Building
-
-```bash
-# Debug build
 cargo build
-
-# Release build
 cargo build --release
-
-# Check without building
-cargo check
-
-# Run clippy lints
-cargo clippy
+cargo test
+cargo clippy --all-targets --all-features -- -D warnings
 ```
-
-### Code Structure
-
-- **390+ unit tests** covering all major components
-- Modular architecture with clear separation of concerns
-- Async/await throughout using Tokio runtime
-- Parallel file processing using Rayon
-- Comprehensive error handling with `anyhow`
-
-## Limitations
-
-- Only processes the root `.gitignore` and `.aceignore` files (nested ignore files are not supported)
-- Requires network access to the indexing API
-- Maximum file size: 128KB per file
-- Maximum batch size: 1MB per upload batch
-
-## License
-
-This project is dual-licensed:
-
-### Non-Commercial / Personal Use - GNU General Public License v3.0
-
-Free for personal projects, educational purposes, open source projects, and non-commercial use. See [LICENSE](LICENSE) for the full GPLv3 license text.
-
-### Commercial / Workplace Use - Commercial License Required
-
-**If you use ace-tool-rs in a commercial environment, workplace, or for any commercial purpose, you must obtain a commercial license.**
-
-This includes but is not limited to:
-- Using the software at work (any organization)
-- Integrating into commercial products or services
-- Using for client work or consulting
-- Offering as part of a SaaS/cloud service
-
-**Contact**: missdeer@gmail.com for commercial licensing inquiries.
-
-See [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL) for more details.
-
-## Author
-
-[missdeer](https://github.com/missdeer)
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## Star History
-
-[![Star History Chart](https://starchart.cc/missdeer/ace-tool-rs.svg)](https://starchart.cc/missdeer/ace-tool-rs)

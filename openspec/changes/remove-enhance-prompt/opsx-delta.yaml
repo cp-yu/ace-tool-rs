@@ -1,0 +1,54 @@
+schema_version: 1
+
+# REMOVED sections capture what is being deleted from the system
+
+REMOVED:
+  domains:
+    - id: dom.enhancement
+      reason: "上游 Augment 服务不再提供 prompt-enhancer API，整个 enhancement 领域功能已无法工作"
+
+    - id: dom.integration
+      reason: "所有第三方 API 集成仅用于 prompt enhancement 功能，随 enhancement 领域一起移除"
+
+  capabilities:
+    # Enhancement Domain capabilities
+    - id: cap.enhancement.orchestrate
+      reason: "Prompt enhancement 功能已移除"
+
+    - id: cap.enhancement.webui
+      reason: "Web UI 仅服务于 prompt enhancement 功能"
+
+    - id: cap.enhancement.api
+      reason: "API 路由仅用于 prompt enhancement"
+
+    # Integration Domain capabilities
+    - id: cap.integration.augment
+      reason: "Augment API 仅用于 prompt enhancement"
+
+    - id: cap.integration.claude
+      reason: "Claude API 集成仅用于 prompt enhancement"
+
+    - id: cap.integration.openai
+      reason: "OpenAI API 集成仅用于 prompt enhancement"
+
+    - id: cap.integration.gemini
+      reason: "Gemini API 集成仅用于 prompt enhancement"
+
+    - id: cap.integration.codex
+      reason: "Codex API 集成仅用于 prompt enhancement"
+
+# MODIFIED sections capture changes to existing capabilities
+
+MODIFIED:
+  project:
+    description: "MCP server for codebase indexing and semantic search"
+    # 移除 "and prompt enhancement" 部分
+
+  capabilities:
+    - id: cap.mcp.tools
+      intent: "Register and expose MCP tools (search_context only) to clients"
+      # 移除 enhance_prompt 工具引用
+      changes:
+        - "不再注册 enhance_prompt 工具"
+        - "MCP tools/list 响应仅包含 search_context"
+        - "移除 is_enhance_prompt_enabled() 条件逻辑"
